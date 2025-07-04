@@ -3,567 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema CRUD - Gestión de Rutas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Búsqueda de Rutas y Fletes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
         }
-        .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            border: none;
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
         }
-        .table-responsive {
-            max-height: 500px;
+        
+        .search-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .results-container {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-height: 70vh;
             overflow-y: auto;
         }
-        .btn-action {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
         }
-        .currency {
-            text-align: right;
+        
+        .table thead {
+            background-color: #495057;
+            color: white;
         }
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.3s ease;
         }
-        @media (max-width: 768px) {
-            .header-actions {
-                flex-direction: column;
-            }
+        
+        .search-input {
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-search {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .badge-custom {
+            background-color: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid py-4">
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1><i class="fas fa-search me-3"></i>Sistema de Búsqueda de Rutas y Fletes</h1>
+                    <p class="mb-0">Busca información de rutas, agencias, zonas y fletes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
         <div class="row">
             <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1><i class="fas fa-route me-2"></i>Sistema de Gestión de Rutas</h1>
-                    <div class="header-actions">
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#routeModal" onclick="openModal()">
-                            <i class="fas fa-plus"></i> Nueva Ruta
-                        </button>
-                        <button class="btn btn-info" onclick="exportToCSV()">
-                            <i class="fas fa-download"></i> Exportar CSV
-                        </button>
-                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="importFromCSV(event)">
-                        <button class="btn btn-warning" onclick="document.getElementById('csvFileInput').click()">
-                            <i class="fas fa-upload"></i> Importar CSV
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filtros y búsqueda -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label for="searchInput" class="form-label">Buscar</label>
-                                <input type="text" class="form-control" id="searchInput" placeholder="Buscar por ruta, agencia o zona..." onkeyup="filterTable()">
+                <div class="search-container">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0" style="border-radius: 25px 0 0 25px;">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" id="searchInput" class="form-control search-input border-start-0" 
+                                       placeholder="Buscar por índice, ruta, agencia, zona, descripción o flete..." 
+                                       style="border-radius: 0 25px 25px 0;">
                             </div>
-                            <div class="col-md-3">
-                                <label for="agencyFilter" class="form-label">Filtrar por Agencia</label>
-                                <select class="form-select" id="agencyFilter" onchange="filterTable()">
-                                    <option value="">Todas las agencias</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="zoneFilter" class="form-label">Filtrar por Zona</label>
-                                <select class="form-select" id="zoneFilter" onchange="filterTable()">
-                                    <option value="">Todas las zonas</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
-                                    <i class="fas fa-times"></i> Limpiar
-                                </button>
-                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button id="searchBtn" class="btn btn-search w-100">
+                                <i class="fas fa-search me-2"></i>Buscar
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabla de rutas -->
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Lista de Rutas <span id="recordCount" class="badge bg-secondary">0</span></h5>
+                <div class="results-container">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>Resultados de Búsqueda
+                        </h5>
+                        <span id="resultsCount" class="badge-custom">0 resultados</span>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Índice</th>
-                                        <th>Ruta</th>
-                                        <th>Agencia</th>
-                                        <th>Zona</th>
-                                        <th>Descripción</th>
-                                        <th class="currency">Flete (Bs.)</th>
-                                        <th width="150">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="routeTableBody">
-                                    <!-- Los datos se cargarán aquí -->
-                                </tbody>
-                            </table>
-                        </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Índice</th>
+                                    <th>Ruta</th>
+                                    <th>Agencia</th>
+                                    <th>Zona</th>
+                                    <th>Descripción</th>
+                                    <th>Flete</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTable">
+                                <!-- Los resultados se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="noResults" class="no-results d-none">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5>No se encontraron resultados</h5>
+                        <p>Intenta con otros términos de búsqueda</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para crear/editar ruta -->
-    <div class="modal fade" id="routeModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Nueva Ruta</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="routeForm">
-                        <input type="hidden" id="routeIndex">
-                        
-                        <div class="mb-3">
-                            <label for="ruta" class="form-label">Ruta *</label>
-                            <input type="text" class="form-control" id="ruta" required>
-                            <div class="invalid-feedback">Por favor ingresa la ruta.</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="agencia" class="form-label">Agencia *</label>
-                            <input type="text" class="form-control" id="agencia" required>
-                            <div class="invalid-feedback">Por favor ingresa la agencia.</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="zona" class="form-label">Zona *</label>
-                            <input type="text" class="form-control" id="zona" required>
-                            <div class="invalid-feedback">Por favor ingresa la zona.</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="descripcion" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="descripcion" rows="3" placeholder="Descripción opcional de la ruta"></textarea>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="flete" class="form-label">Flete (Bs.) *</label>
-                            <input type="number" class="form-control" id="flete" step="0.01" min="0" required>
-                            <div class="invalid-feedback">Por favor ingresa un flete válido.</div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="saveRoute()" id="saveButton">Guardar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de confirmación para eliminar -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar esta ruta?</p>
-                    <p class="text-muted mb-0" id="deleteRouteInfo"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" onclick="confirmDelete()" id="confirmDeleteButton">Eliminar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Variables globales
-        let routes = [];
-        let editingIndex = -1;
-        let deleteIndex = -1;
+        // Datos de ejemplo para la aplicación
+        const datosRutas = [
+            { indice: 1, ruta: "R001", agencia: "Agencia Norte", zona: "Zona A", descripcion: "Ruta principal hacia el norte", flete: "$250.00" },
+            { indice: 2, ruta: "R002", agencia: "Agencia Sur", zona: "Zona B", descripcion: "Ruta comercial sur", flete: "$180.00" },
+            { indice: 3, ruta: "R003", agencia: "Agencia Este", zona: "Zona C", descripcion: "Ruta industrial este", flete: "$320.00" },
+            { indice: 4, ruta: "R004", agencia: "Agencia Oeste", zona: "Zona D", descripcion: "Ruta turística oeste", flete: "$150.00" },
+            { indice: 5, ruta: "R005", agencia: "Agencia Centro", zona: "Zona A", descripcion: "Ruta urbana central", flete: "$220.00" },
+            { indice: 6, ruta: "R006", agencia: "Agencia Norte", zona: "Zona B", descripcion: "Ruta secundaria norte", flete: "$190.00" },
+            { indice: 7, ruta: "R007", agencia: "Agencia Sur", zona: "Zona C", descripcion: "Ruta express sur", flete: "$280.00" },
+            { indice: 8, ruta: "R008", agencia: "Agencia Este", zona: "Zona D", descripcion: "Ruta logística este", flete: "$200.00" },
+            { indice: 9, ruta: "R009", agencia: "Agencia Oeste", zona: "Zona A", descripcion: "Ruta costera oeste", flete: "$350.00" },
+            { indice: 10, ruta: "R010", agencia: "Agencia Centro", zona: "Zona B", descripcion: "Ruta metropolitana", flete: "$240.00" },
+            { indice: 11, ruta: "R011", agencia: "Agencia Norte", zona: "Zona C", descripcion: "Ruta montañosa norte", flete: "$300.00" },
+            { indice: 12, ruta: "R012", agencia: "Agencia Sur", zona: "Zona D", descripcion: "Ruta rural sur", flete: "$160.00" },
+            { indice: 13, ruta: "R013", agencia: "Agencia Este", zona: "Zona A", descripcion: "Ruta portuaria este", flete: "$380.00" },
+            { indice: 14, ruta: "R014", agencia: "Agencia Oeste", zona: "Zona B", descripcion: "Ruta fronteriza oeste", flete: "$420.00" },
+            { indice: 15, ruta: "R015", agencia: "Agencia Centro", zona: "Zona C", descripcion: "Ruta comercial centro", flete: "$270.00" }
+        ];
 
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', function() {
-            loadRoutes();
-            loadSampleData();
-            updateTable();
-            updateFilters();
-        });
+        let datosOriginales = [...datosRutas];
+        let resultadosActuales = [];
 
-        // Cargar datos desde localStorage
-        function loadRoutes() {
-            const savedRoutes = localStorage.getItem('routes');
-            if (savedRoutes) {
-                routes = JSON.parse(savedRoutes);
+        // Elementos del DOM
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsTable = document.getElementById('resultsTable');
+        const resultsCount = document.getElementById('resultsCount');
+        const noResults = document.getElementById('noResults');
+
+        // Función para resaltar texto coincidente
+        function resaltarTexto(texto, busqueda) {
+            if (!busqueda) return texto;
+            const regex = new RegExp(`(${busqueda})`, 'gi');
+            return texto.toString().replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // Función para realizar la búsqueda
+        function realizarBusqueda(termino) {
+            if (!termino.trim()) {
+                resultadosActuales = datosOriginales;
+            } else {
+                resultadosActuales = datosOriginales.filter(item => {
+                    const terminoLower = termino.toLowerCase();
+                    return (
+                        item.indice.toString().toLowerCase().includes(terminoLower) ||
+                        item.ruta.toLowerCase().includes(terminoLower) ||
+                        item.agencia.toLowerCase().includes(terminoLower) ||
+                        item.zona.toLowerCase().includes(terminoLower) ||
+                        item.descripcion.toLowerCase().includes(terminoLower) ||
+                        item.flete.toLowerCase().includes(terminoLower)
+                    );
+                });
             }
+            mostrarResultados(termino);
         }
 
-        // Guardar datos en localStorage
-        function saveRoutes() {
-            localStorage.setItem('routes', JSON.stringify(routes));
-        }
-
-        // Cargar datos de ejemplo si no hay datos
-        function loadSampleData() {
-            if (routes.length === 0) {
-                routes = [
-                    {
-                        indice: 1,
-                        ruta: "La Paz - Cochabamba",
-                        agencia: "Trans Copacabana",
-                        zona: "Altiplano",
-                        descripcion: "Ruta directa entre La Paz y Cochabamba via carretera principal",
-                        flete: 25.50
-                    },
-                    {
-                        indice: 2,
-                        ruta: "La Paz - Santa Cruz",
-                        agencia: "Bolivar",
-                        zona: "Nacional",
-                        descripcion: "Conexión principal La Paz - Santa Cruz",
-                        flete: 45.00
-                    },
-                    {
-                        indice: 3,
-                        ruta: "Cochabamba - Sucre",
-                        agencia: "Trans Copacabana",
-                        zona: "Valle",
-                        descripcion: "Ruta valle a valle",
-                        flete: 30.75
-                    },
-                    {
-                        indice: 4,
-                        ruta: "La Paz - Oruro",
-                        agencia: "6 de Octubre",
-                        zona: "Altiplano",
-                        descripcion: "Ruta corta altiplano",
-                        flete: 15.00
-                    }
-                ];
-                saveRoutes();
-            }
-        }
-
-        // Actualizar tabla
-        function updateTable() {
-            const tbody = document.getElementById('routeTableBody');
-            tbody.innerHTML = '';
-
-            const filteredRoutes = getFilteredRoutes();
-            
-            filteredRoutes.forEach(route => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><span class="badge bg-primary">${route.indice}</span></td>
-                    <td><strong>${route.ruta}</strong></td>
-                    <td>${route.agencia}</td>
-                    <td><span class="badge bg-info">${route.zona}</span></td>
-                    <td>${route.descripcion || '<em class="text-muted">Sin descripción</em>'}</td>
-                    <td class="currency"><strong>Bs. ${parseFloat(route.flete).toFixed(2)}</strong></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary btn-action me-1" onclick="editRoute(${route.indice})" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteRoute(${route.indice})" title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
+        // Función para mostrar los resultados
+        function mostrarResultados(termino = '') {
+            const tabla = document.getElementById('resultsTable');
+            const contador = document.getElementById('resultsCount');
+            const sinResultados = document.getElementById('noResults');
 
             // Actualizar contador
-            document.getElementById('recordCount').textContent = filteredRoutes.length;
-        }
+            contador.textContent = `${resultadosActuales.length} resultado${resultadosActuales.length !== 1 ? 's' : ''}`;
 
-        // Obtener rutas filtradas
-        function getFilteredRoutes() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const agencyFilter = document.getElementById('agencyFilter').value;
-            const zoneFilter = document.getElementById('zoneFilter').value;
-
-            return routes.filter(route => {
-                const matchesSearch = !searchTerm || 
-                    route.ruta.toLowerCase().includes(searchTerm) ||
-                    route.agencia.toLowerCase().includes(searchTerm) ||
-                    route.zona.toLowerCase().includes(searchTerm) ||
-                    (route.descripcion && route.descripcion.toLowerCase().includes(searchTerm));
-
-                const matchesAgency = !agencyFilter || route.agencia === agencyFilter;
-                const matchesZone = !zoneFilter || route.zona === zoneFilter;
-
-                return matchesSearch && matchesAgency && matchesZone;
-            });
-        }
-
-        // Actualizar filtros
-        function updateFilters() {
-            const agencies = [...new Set(routes.map(route => route.agencia))].sort();
-            const zones = [...new Set(routes.map(route => route.zona))].sort();
-
-            const agencySelect = document.getElementById('agencyFilter');
-            const zoneSelect = document.getElementById('zoneFilter');
-
-            // Limpiar opciones existentes (excepto la primera)
-            agencySelect.innerHTML = '<option value="">Todas las agencias</option>';
-            zoneSelect.innerHTML = '<option value="">Todas las zonas</option>';
-
-            // Agregar opciones de agencias
-            agencies.forEach(agency => {
-                const option = document.createElement('option');
-                option.value = agency;
-                option.textContent = agency;
-                agencySelect.appendChild(option);
-            });
-
-            // Agregar opciones de zonas
-            zones.forEach(zone => {
-                const option = document.createElement('option');
-                option.value = zone;
-                option.textContent = zone;
-                zoneSelect.appendChild(option);
-            });
-        }
-
-        // Filtrar tabla
-        function filterTable() {
-            updateTable();
-        }
-
-        // Limpiar filtros
-        function clearFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('agencyFilter').value = '';
-            document.getElementById('zoneFilter').value = '';
-            updateTable();
-        }
-
-        // Abrir modal para nueva ruta o edición
-        function openModal(index = null) {
-            editingIndex = index;
-            const modal = document.getElementById('routeModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const form = document.getElementById('routeForm');
-            const saveButton = document.getElementById('saveButton');
-
-            // Limpiar validación anterior
-            form.classList.remove('was-validated');
-
-            if (index !== null) {
-                // Modo edición
-                const route = routes.find(r => r.indice === index);
-                modalTitle.textContent = 'Editar Ruta';
-                saveButton.textContent = 'Actualizar';
-                
-                document.getElementById('routeIndex').value = route.indice;
-                document.getElementById('ruta').value = route.ruta;
-                document.getElementById('agencia').value = route.agencia;
-                document.getElementById('zona').value = route.zona;
-                document.getElementById('descripcion').value = route.descripcion || '';
-                document.getElementById('flete').value = route.flete;
-            } else {
-                // Modo creación
-                modalTitle.textContent = 'Nueva Ruta';
-                saveButton.textContent = 'Guardar';
-                form.reset();
-                document.getElementById('routeIndex').value = '';
-            }
-        }
-
-        // Editar ruta
-        function editRoute(index) {
-            openModal(index);
-        }
-
-        // Guardar ruta (crear o actualizar)
-        function saveRoute() {
-            const form = document.getElementById('routeForm');
-            
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
+            if (resultadosActuales.length === 0) {
+                tabla.innerHTML = '';
+                sinResultados.classList.remove('d-none');
                 return;
             }
 
-            const routeData = {
-                ruta: document.getElementById('ruta').value.trim(),
-                agencia: document.getElementById('agencia').value.trim(),
-                zona: document.getElementById('zona').value.trim(),
-                descripcion: document.getElementById('descripcion').value.trim(),
-                flete: parseFloat(document.getElementById('flete').value)
-            };
+            sinResultados.classList.add('d-none');
 
-            if (editingIndex !== null) {
-                // Actualizar ruta existente
-                const routeIndex = routes.findIndex(r => r.indice === editingIndex);
-                routes[routeIndex] = { ...routes[routeIndex], ...routeData };
-            } else {
-                // Crear nueva ruta
-                const newIndex = routes.length > 0 ? Math.max(...routes.map(r => r.indice)) + 1 : 1;
-                routes.push({ indice: newIndex, ...routeData });
+            // Generar filas de la tabla
+            tabla.innerHTML = resultadosActuales.map(item => `
+                <tr>
+                    <td>${resaltarTexto(item.indice, termino)}</td>
+                    <td>${resaltarTexto(item.ruta, termino)}</td>
+                    <td>${resaltarTexto(item.agencia, termino)}</td>
+                    <td>${resaltarTexto(item.zona, termino)}</td>
+                    <td>${resaltarTexto(item.descripcion, termino)}</td>
+                    <td><strong>${resaltarTexto(item.flete, termino)}</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        // Event listeners
+        searchBtn.addEventListener('click', function() {
+            const termino = searchInput.value.trim();
+            realizarBusqueda(termino);
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const termino = searchInput.value.trim();
+                realizarBusqueda(termino);
             }
+        });
 
-            saveRoutes();
-            updateTable();
-            updateFilters();
-
-            // Cerrar modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('routeModal'));
-            modal.hide();
-
-            // Mostrar mensaje de éxito
-            showAlert(editingIndex !== null ? 'Ruta actualizada correctamente' : 'Ruta creada correctamente', 'success');
-        }
-
-        // Eliminar ruta
-        function deleteRoute(index) {
-            deleteIndex = index;
-            const route = routes.find(r => r.indice === index);
-            document.getElementById('deleteRouteInfo').textContent = `${route.ruta} - ${route.agencia}`;
-            
-            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            deleteModal.show();
-        }
-
-        // Confirmar eliminación
-        function confirmDelete() {
-            routes = routes.filter(route => route.indice !== deleteIndex);
-            saveRoutes();
-            updateTable();
-            updateFilters();
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-            modal.hide();
-
-            showAlert('Ruta eliminada correctamente', 'warning');
-        }
-
-        // Exportar a CSV
-        function exportToCSV() {
-            if (routes.length === 0) {
-                showAlert('No hay datos para exportar', 'warning');
-                return;
+        // Búsqueda en tiempo real (opcional)
+        searchInput.addEventListener('input', function() {
+            const termino = this.value.trim();
+            if (termino.length >= 1 || termino.length === 0) {
+                realizarBusqueda(termino);
             }
+        });
 
-            const headers = ['Indice', 'Ruta', 'Agencia', 'Zona', 'Descripcion', 'Flete'];
-            const csvContent = [
-                headers.join(','),
-                ...routes.map(route => [
-                    route.indice,
-                    `"${route.ruta}"`,
-                    `"${route.agencia}"`,
-                    `"${route.zona}"`,
-                    `"${route.descripcion || ''}"`,
-                    route.flete
-                ].join(','))
-            ].join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `rutas_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showAlert('Archivo CSV exportado correctamente', 'success');
-        }
-
-        // Importar desde CSV
-        function importFromCSV(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const csv = e.target.result;
-                    const lines = csv.split('\n').filter(line => line.trim());
-                    
-                    if (lines.length < 2) {
-                        showAlert('El archivo CSV debe tener al menos una fila de datos', 'error');
-                        return;
-                    }
-
-                    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-                    const newRoutes = [];
-
-                    for (let i = 1; i < lines.length; i++) {
-                        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-                        
-                        if (values.length >= 6) {
-                            newRoutes.push({
-                                indice: parseInt(values[0]) || (routes.length + newRoutes.length + 1),
-                                ruta: values[1] || '',
-                                agencia: values[2] || '',
-                                zona: values[3] || '',
-                                descripcion: values[4] || '',
-                                flete: parseFloat(values[5]) || 0
-                            });
-                        }
-                    }
-
-                    if (newRoutes.length > 0) {
-                        // Confirmar importación
-                        if (confirm(`¿Deseas importar ${newRoutes.length} rutas? Esto agregará las rutas a las existentes.`)) {
-                            routes = [...routes, ...newRoutes];
-                            saveRoutes();
-                            updateTable();
-                            updateFilters();
-                            showAlert(`${newRoutes.length} rutas importadas correctamente`, 'success');
-                        }
-                    } else {
-                        showAlert('No se encontraron datos válidos en el archivo CSV', 'error');
-                    }
-                } catch (error) {
-                    showAlert('Error al procesar el archivo CSV', 'error');
-                }
-            };
-            reader.readAsText(file);
-            
-            // Limpiar input
-            event.target.value = '';
-        }
-
-        // Mostrar alertas
-        function showAlert(message, type) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
-            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.body.appendChild(alertDiv);
-            
-            // Auto-remover después de 5 segundos
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
-            }, 5000);
-        }
+        // Cargar datos iniciales al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            realizarBusqueda('');
+        });
     </script>
 </body>
 </html>
