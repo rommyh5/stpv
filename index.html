@@ -180,21 +180,30 @@
     <script>
         // Datos de ejemplo para la aplicación
         const datosRutas = [
-            { indice: 1, ruta: "R001", agencia: "Agencia Norte", zona: "Zona A", descripcion: "Ruta principal hacia el norte", flete: "$250.00" },
-            { indice: 2, ruta: "R002", agencia: "Agencia Sur", zona: "Zona B", descripcion: "Ruta comercial sur", flete: "$180.00" },
-            { indice: 3, ruta: "R003", agencia: "Agencia Este", zona: "Zona C", descripcion: "Ruta industrial este", flete: "$320.00" },
-            { indice: 4, ruta: "R004", agencia: "Agencia Oeste", zona: "Zona D", descripcion: "Ruta turística oeste", flete: "$150.00" },
-            { indice: 5, ruta: "R005", agencia: "Agencia Centro", zona: "Zona A", descripcion: "Ruta urbana central", flete: "$220.00" },
-            { indice: 6, ruta: "R006", agencia: "Agencia Norte", zona: "Zona B", descripcion: "Ruta secundaria norte", flete: "$190.00" },
-            { indice: 7, ruta: "R007", agencia: "Agencia Sur", zona: "Zona C", descripcion: "Ruta express sur", flete: "$280.00" },
-            { indice: 8, ruta: "R008", agencia: "Agencia Este", zona: "Zona D", descripcion: "Ruta logística este", flete: "$200.00" },
-            { indice: 9, ruta: "R009", agencia: "Agencia Oeste", zona: "Zona A", descripcion: "Ruta costera oeste", flete: "$350.00" },
-            { indice: 10, ruta: "R010", agencia: "Agencia Centro", zona: "Zona B", descripcion: "Ruta metropolitana", flete: "$240.00" },
-            { indice: 11, ruta: "R011", agencia: "Agencia Norte", zona: "Zona C", descripcion: "Ruta montañosa norte", flete: "$300.00" },
-            { indice: 12, ruta: "R012", agencia: "Agencia Sur", zona: "Zona D", descripcion: "Ruta rural sur", flete: "$160.00" },
-            { indice: 13, ruta: "R013", agencia: "Agencia Este", zona: "Zona A", descripcion: "Ruta portuaria este", flete: "$380.00" },
-            { indice: 14, ruta: "R014", agencia: "Agencia Oeste", zona: "Zona B", descripcion: "Ruta fronteriza oeste", flete: "$420.00" },
-            { indice: 15, ruta: "R015", agencia: "Agencia Centro", zona: "Zona C", descripcion: "Ruta comercial centro", flete: "$270.00" }
+            { indice: 1, ruta:CAA001, agencia:Rio Seco, zona:Limite Milluni, descripcion:VIACHA LA PAZ A LP-MU-EA-Limite MillSAP14493, flete:2.29},
+            { indice: 2, ruta:CAA002, agencia:Rio Seco, zona:Villa Remedios, descripcion:VIACHA LA PAZ A LP-MU-EA-V. RemediosSAP33749, flete:2.3},
+            { indice: 3, ruta:CAA003, agencia:Rio Seco, zona:Atalaya, descripcion:VIACHA LA PAZ A LP-MU-EA-AtalayaSAP45203, flete:2.22},
+            { indice: 4, ruta:CAA004, agencia:Rio Seco, zona:San Miguel, descripcion:VIACHA LA PAZ A LP-MU-EA-San MiguelSAP7304, flete:2.44},
+            { indice: 5, ruta:CAA005, agencia:Rio Seco, zona:Villa lngenio, descripcion:VIACHA LA PAZ A LP-MU-EA-V. IngenioSAP70502, flete:2.12},
+            { indice: 6, ruta:CAA006, agencia:Rio Seco, zona:German Busch 1-1, descripcion:VIACHA LA PAZ A LP-MU-EA-G. Bush 1-1SAP97326, flete:2.14},
+            { indice: 7, ruta:CAA007, agencia:Rio Seco, zona:Faboca, descripcion:VIACHA LA PAZ A LP-MU-EA-FabocaSAP112970, flete:2.3},
+            { indice: 8, ruta:CAA008, agencia:0, zona:0, descripcion:VIACHA LA PAZ A LP-MU-EA-AtalayaSAP1578, flete:2.22},
+            { indice: 9, ruta:CAA009, agencia:0, zona:0, descripcion:no se tiene info, flete:0},
+            { indice: 10, ruta:CAA010, agencia:Rio Seco, zona:Playa Verde, descripcion:VIACHA LA PAZ A LP-MU-EA-Playa VerdeSAP118198, flete:2.58},
+            { indice: 11, ruta:CAA011, agencia:Rio Seco, zona:Lagunas, descripcion:VIACHA LA PAZ A LP-MU-EA-LagunasSAP5066, flete:2.32},
+            { indice: 12, ruta:CAA012, agencia:0, zona:0, descripcion:no se tiene info, flete:0},
+            { indice: 13, ruta:CAA013, agencia:Rio Seco, zona:Kalluatca, descripcion:VIACHA LA PAZ A LP-MU-EA-KalluatcaSAP8014, flete:2.53},
+            { indice: 14, ruta:CAA014, agencia:0, zona:0, descripcion:no se tiene info, flete:0},
+            { indice: 15, ruta:CAA015, agencia:Rio Seco, zona:San Roque, descripcion:VIACHA LA PAZ A LP-MU-EA-San RoqueSAP56752, flete:2.44},
+            { indice: 16, ruta:CAA016, agencia:Rio Seco, zona:Progreso, descripcion:VIACHA LA PAZ A LP-MU-EA-ProgresoSAP137377, flete:2.22},
+            { indice: 17, ruta:CAA017, agencia:Rio Seco, zona:San Antonio, descripcion:VIACHA LA PAZ A LP-MU-EA-San AntonioSAP27960, flete:2.39},
+            { indice: 18, ruta:CAA018, agencia:Rio Seco, zona:Milluni Bajo, descripcion:VIACHA LA PAZ A LP-MU-EA-Milluni BajSAP42639, flete:2.3},
+            { indice: 19, ruta:CAA019, agencia:Rio Seco, zona:Villa Cooperativa, descripcion:VIACHA LA PAZ A LP-MU-EA-V/CooperatiSAP40029, flete:2.39},
+            { indice: 20, ruta:CAA020, agencia:Rio Seco, zona:6 de Agosto, descripcion:VIACHA LA PAZ A LP-MU-EA-6 de AgostoSAP110700, flete:0},
+            { indice: 21, ruta:CAA021, agencia:0, zona:0, descripcion:VIACHA LA PAZ A LP-MU-EA-ProgresoSAP42590, flete:0},
+            { indice: 22, ruta:CAA022, agencia:Rio Seco, zona:Hichusirca, descripcion:VIACHA LA PAZ A LP-MU-EA-HichusircaSAP135144, flete:2.14},
+            { indice: 23, ruta:CAA023, agencia:Rio Seco, zona:Bautista Saavedra, descripcion:VIACHA LA PAZ A LP-MU-EA-B.SaavedraSAP19809, flete:2.17},
+            { indice: 24, ruta:CAA024, agencia:Rio Seco, zona:San Juan, descripcion:VIACHA LA PAZ A LP-MU-EA-San JuanSAP2735, flete:0}
         ];
 
         let datosOriginales = [...datosRutas];
