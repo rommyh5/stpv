@@ -3266,7 +3266,7 @@
                 resultadosActuales = datosOriginales.filter(item => {
                     const terminoLower = termino.toLowerCase();
                     return (
-                        item.indice.toString().toLowerCase().includes(terminoLower) ||
+                        //item.indice.toString().toLowerCase().includes(terminoLower) ||
                         item.ruta.toLowerCase().includes(terminoLower) ||
                         item.agencia.toLowerCase().includes(terminoLower) ||
                         item.zona.toLowerCase().includes(terminoLower) ||
@@ -3305,7 +3305,7 @@
 			{
             tabla.innerHTML = resultadosActuales.map(item => `
                 <tr>
-                    <td>${resaltarTexto(item.indice, termino)}</td>
+                    <!-- <td>${resaltarTexto(item.indice, termino)}</td> -->
                     <td>${resaltarTexto(item.ruta, termino)}</td>
                     <td>${resaltarTexto(item.agencia, termino)}</td>
                     <td>${resaltarTexto(item.zona, termino)}</td>
